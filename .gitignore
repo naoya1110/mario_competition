@@ -1,3 +1,10 @@
+# Mario BC project data / model artifacts
+data/
+models/checkpoints/*.pt
+results/eval_runs/*.csv
+results/videos/*.mp4
+*.zip
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
