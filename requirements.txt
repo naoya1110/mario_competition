@@ -9,7 +9,6 @@ numpy>=1.18.5
 tqdm>=4.48.2
 torch==2.13.0
 opencv-python==5.0.0.93
-Pillow
 pandas
 matplotlib
 ipykernel

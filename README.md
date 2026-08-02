@@ -64,7 +64,7 @@ mario_test/
 │   ├── 03_train_bc.ipynb      # 模倣学習でCNNを学習 (Colabにアップロードして実行)
 │   └── 04_playagent.ipynb     # 学習済モデルで自動プレイ+スコア/動画出力 (ローカル実行)
 ├── data/                      # 収集データ (gitignore対象)
-│   ├── episodes/ep_XXXX/      # 1エピソード = 1フォルダ。フレーム画像を連番で保存
+│   ├── episodes/ep_XXXX/      # 1エピソード = 1フォルダ (video.mp4 + actions.csv)
 │   └── manifest.csv           # エピソード一覧 (score, x_pos_max, flag_get 等)
 ├── models/checkpoints/        # Colabからダウンロードした学習済 .pt (gitignore対象)
 └── results/
@@ -91,10 +91,19 @@ mario_test/
 | Esc | プレイ終了(その時点までのデータも保存される) |
 
 - 死亡・ゴールすると自動的に次のエピソードが始まる(何度でも連続プレイ可能)。
-- 各エピソードのフレームは `data/episodes/ep_XXXX/000000_a1_right.png` のように、
-  連番+アクションindex+アクション名をファイル名に含めた画像として保存される。
+- エピソード番号(`ep_XXXX`)は `data/episodes/` の既存フォルダを見て続きから採番されるため、
+  ノートブック/カーネルを再起動して複数回に分けてプレイしても、既存データを上書きしない。
+- プレイ自体はNES本来の60fpsのまま行われるが、**保存するフレームは30fpsに間引かれる**(`TARGET_FPS` で変更可。
+  データ量を抑えるための措置で、プレイの操作感には影響しない)。
+- 各エピソードは `data/episodes/ep_XXXX/video.mp4`(間引き後のフレームをmp4で保存)と
+  `data/episodes/ep_XXXX/actions.csv`(フレームごとのアクション)のペアとして保存される。
 - プレイ画面のウィンドウはデフォルトで2倍サイズ(`RENDER_SCALE` で変更可)で表示される。
 - エピソードごとの要約(スコア・到達距離・クリア有無など)は `data/manifest.csv` に追記される。
+
+**`TARGET_FPS`(間引き設定)を変更する場合は、`notebooks/04_playagent.ipynb` の同じ値も必ず変更すること。**
+学習データのフレーム間隔と、デプロイ時にモデルがアクションを決定する頻度を一致させるため
+(`04_playagent.ipynb` は `RECORD_EVERY_N` フレームごとに1回だけ新しいアクションを決め、その間は
+同じアクションを保持するフレームスキップ方式になっている)。
 
 ### 2. `notebooks/02_review_data.ipynb` — 収集データのレビュー
 
