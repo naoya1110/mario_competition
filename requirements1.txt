@@ -4,11 +4,3 @@ nes-py==9.0.1
 # nes-py 9.0.1 declares pyglet<=1.5.21, but 1.5.21 crashes on window creation
 # under Python 3.13 on Windows (ctypes/COM incompatibility). 1.5.31 fixes it
 # and keeps the same pyglet 1.x API that nes-py's ImageViewer relies on.
-pyglet==1.5.31
-numpy>=1.18.5
-tqdm>=4.48.2
-torch==2.13.0
-opencv-python==5.0.0.93
-pandas
-matplotlib
-ipykernel
