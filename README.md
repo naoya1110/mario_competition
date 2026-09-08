@@ -36,17 +36,23 @@ Windows 11 上でキーボードを使って Super Mario Bros (`gym-super-mario-
    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
    ```
 
-4. 依存パッケージをインストール
+4. 依存パッケージをインストール(**2段階に分かれている。必ずこの順番で実行すること**)
 
    ```powershell
    python -m pip install --upgrade pip
-   pip install -r requirements.txt
+   pip install -r requirements1.txt
+   pip install -r requirements2.txt
    ```
 
-   `nes-py 9.0.1 requires pyglet<=1.5.21, but you have pyglet 1.5.31` という警告が出るが、これは想定通り
-   (`requirements.txt` 内にコメントで理由を記載: pyglet 1.5.21 は Python 3.13 の Windows 環境でウィンドウ
-   作成時にクラッシュする既知の不具合があり、1.5.31 で修正されているため意図的に上書きしている)。エラーでは
-   ないので無視してよい。
+   2つに分けているのは pyglet のバージョンを上書きするため。`requirements1.txt` の `nes-py 9.0.1` は
+   依存として `pyglet<=1.5.21` を要求するが、pyglet 1.5.21 は Python 3.13 の Windows 環境で
+   ウィンドウ作成時にクラッシュする既知の不具合がある(ctypes/COM の非互換)。1.5.31 で修正されており
+   nes-py の `ImageViewer` が使う pyglet 1.x のAPIも変わらないため、`requirements2.txt` で
+   意図的に 1.5.31 を上書きインストールしている。
+
+   そのため2つ目のコマンドで
+   `nes-py 9.0.1 requires pyglet<=1.5.21, but you have pyglet 1.5.31` という警告が出るが、
+   これは想定通り。エラーではないので無視してよい。
 
 5. VSCodeで `notebooks/*.ipynb` を開き、カーネルとして `.venv` (Python 3.13) を選択する。
 
@@ -57,14 +63,15 @@ Windows 11 上でキーボードを使って Super Mario Bros (`gym-super-mario-
 
 ```
 mario_test/
-├── requirements.txt          # ローカル(Python 3.13)用の依存関係
+├── requirements1.txt         # ローカル(Python 3.13)用の依存関係
+├── requirements2.txt         # 同上(pyglet を 1.5.31 に上書きするため後から入れる分)
 ├── notebooks/
 │   ├── 01_collect_data.ipynb  # 人間プレイの記録 (ローカル実行)
 │   ├── 02_review_data.ipynb   # 収集データの可視化・確認 (ローカル実行)
 │   ├── 03_train_bc.ipynb      # 模倣学習でCNNを学習 (Colabにアップロードして実行)
 │   └── 04_playagent.ipynb     # 学習済モデルで自動プレイ+スコア/動画出力 (ローカル実行)
 ├── data/                      # 収集データ (gitignore対象)
-│   ├── episodes/ep_XXXX/      # 1エピソード = 1フォルダ (video.mp4 + actions.csv)
+│   ├── episodes/ep_YYYYMMDD_HHMMSS/  # 1エピソード = 1フォルダ (video.mp4 + actions.csv)
 │   └── manifest.csv           # エピソード一覧 (score, x_pos_max, flag_get 等)
 ├── models/checkpoints/        # Colabからダウンロードした学習済 .pt (gitignore対象)
 └── results/
@@ -78,25 +85,41 @@ mario_test/
 
 **キー操作**
 
-| キー | 動作 |
-|---|---|
-| `d` | 右 |
-| `a` | 左 |
-| `s` | しゃがむ (下) |
-| `w` | 上 |
-| `o` | ジャンプ (A) |
-| `p` | ダッシュ / ファイア (B) |
-| Enter | スタート |
-| Space | セレクト |
-| Esc | プレイ終了(その時点までのデータも保存される) |
+| キー | 動作 | 変更 |
+|---|---|---|
+| `d` | 右 | 可 |
+| `a` | 左 | 可 |
+| `o` | ジャンプ (A) | 可 |
+| `p` | ダッシュ / ファイア (B) | 可 |
+| Space | エピソード開始 (記録スタート) | 不可 |
+| Esc | データ収集を終了(その時点までのデータも保存される) | 不可 |
 
-- 死亡・ゴールすると自動的に次のエピソードが始まる(何度でも連続プレイ可能)。
-- エピソード番号(`ep_XXXX`)は `data/episodes/` の既存フォルダを見て続きから採番されるため、
-  ノートブック/カーネルを再起動して複数回に分けてプレイしても、既存データを上書きしない。
+ゲーム操作のキーはプレイループのセルにある `KEY_BINDINGS` で変更できる
+(例: `"right": "l"` に書き換えれば右移動が `l` キーになる)。変更したらそのセルを実行し直すこと。
+画面下部に表示される操作説明も `KEY_BINDINGS` から生成されるので表示は自動的に追従する。
+Space と Esc は収集の制御用に固定で、変更できない。
+
+`SIMPLE_MOVEMENT` は7種類の行動(何もしない / 右 / 右+A / 右+B / 右+A+B / A / 左)しか持たないため、
+しゃがみ(下)や上入力に割り当てるキーはない。
+
+**収集の流れ**
+
+1. ウィンドウが開くと**待機状態**になり、画面に操作方法が表示される。この間ゲームは進まない。
+2. **Space** を押すとそのエピソードが開始され、記録も同時に始まる。
+3. 死亡・ゴールするとエピソードが自動保存され、画面中央にそのエピソードのサマリー
+   (到達距離・コイン・スコア・消費時間・フレーム数と、0〜100点のSkillスコア)が表示される。
+   **Space** で次のエピソードを開始できる(何度でも連続プレイ可能)。
+4. **Esc** を押すとデータ収集全体が終了する。プレイ途中だった場合、その時点までのデータも
+   `truncated=True` として保存される。
+
+- 各エピソードの出来は0〜100点の**Skillスコア**で評価される(到達距離45% + クリア30% + 速さ15% +
+  コイン10%)。式の詳細と重みの根拠は `02_review_data.ipynb` にある。
+- エピソードID(`ep_YYYYMMDD_HHMMSS`)は記録開始時刻から作られるため一意になる。ノートブック/カーネルを
+  再起動して複数回に分けてプレイしても、既存データを上書きすることはない。
 - プレイ自体はNES本来の60fpsのまま行われるが、**保存するフレームは30fpsに間引かれる**(`TARGET_FPS` で変更可。
   データ量を抑えるための措置で、プレイの操作感には影響しない)。
-- 各エピソードは `data/episodes/ep_XXXX/video.mp4`(間引き後のフレームをmp4で保存)と
-  `data/episodes/ep_XXXX/actions.csv`(フレームごとのアクション)のペアとして保存される。
+- 各エピソードは `data/episodes/ep_YYYYMMDD_HHMMSS/video.mp4`(間引き後のフレームをmp4で保存)と
+  同フォルダの `actions.csv`(フレームごとのアクション)のペアとして保存される。
 - プレイ画面のウィンドウはデフォルトで2倍サイズ(`RENDER_SCALE` で変更可)で表示される。
 - エピソードごとの要約(スコア・到達距離・クリア有無など)は `data/manifest.csv` に追記される。
 
@@ -110,11 +133,16 @@ mario_test/
 学習に進む前に、収集したデータの中身を確認するための読み取り専用ノートブック。
 
 - `data/manifest.csv` の一覧表示・要約統計
+- **Skillスコア**(0〜100点)の算出と、その分布・エピソード順の推移プロット
+  (プレイを重ねてうまくなっているか、学習データとして残す価値があるかの確認)
 - 7種類のアクションの出現回数の棒グラフ(クラス不均衡の確認)
 - 指定エピソードのフレームサンプル表示・アクション系列の時系列プロット
 
-明らかにおかしいエピソードが見つかった場合は、該当する `data/episodes/ep_XXXX/` フォルダを削除し、
-`data/manifest.csv` の対応行も手動で削除する。
+Skillスコアの定数と計算式は `01_collect_data.ipynb` と一致させてあるので、
+片方を変更したらもう片方も必ず合わせること。
+
+明らかにおかしいエピソード(スコアが極端に低い、記録ミスなど)が見つかった場合は、該当する
+`data/episodes/ep_YYYYMMDD_HHMMSS/` フォルダを削除し、`data/manifest.csv` の対応行も手動で削除する。
 
 ### 3. `notebooks/03_train_bc.ipynb` — Colabでの学習
 
