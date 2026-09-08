@@ -1,9 +1,7 @@
 # Mario BC project data / model artifacts
 data/
 models/checkpoints/*.pt
-results/eval_runs/*.csv
-results/videos/*.mp4
-results/submissions/
+results/
 *.zip
 
 # Byte-compiled / optimized / DLL files

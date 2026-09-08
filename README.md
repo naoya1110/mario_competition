@@ -69,14 +69,12 @@ mario_test/
 │   ├── 01_collect_data.ipynb  # 人間プレイの記録 (ローカル実行)
 │   ├── 02_review_data.ipynb   # 収集データの可視化・確認 (ローカル実行)
 │   ├── 03_train_bc.ipynb      # 模倣学習でCNNを学習 (Colabにアップロードして実行)
-│   └── 04_playagent.ipynb     # 学習済モデルで自動プレイ+スコア/動画出力 (ローカル実行)
+│   └── 04_playagent.ipynb     # 学習済モデルで自動プレイ+提出用ファイル作成 (ローカル実行)
 ├── data/                      # 収集データ (gitignore対象)
 │   ├── episodes/ep_YYYYMMDD_HHMMSS/  # 1エピソード = 1フォルダ (video.mp4 + actions.csv)
 │   └── manifest.csv           # エピソード一覧 (score, x_pos_max, flag_get 等)
 ├── models/checkpoints/        # Colabからダウンロードした学習済 .pt (gitignore対象)
-└── results/
-    ├── eval_runs/              # 04_playagent.ipynb の実行ログCSV (gitignore対象)
-    └── videos/                 # 04_playagent.ipynb が出力するプレイ動画 (gitignore対象)
+└── results/submissions/       # 04_playagent.ipynb が出力する提出物 (gitignore対象)
 ```
 
 ### 1. `notebooks/01_collect_data.ipynb` — データ収集
@@ -194,29 +192,25 @@ NOOP が多数派になる。結果としてモデルは開始画面で NOOP を
 人間のプレイには「どちらでもよい場面」が大量にある一方、着地の1フレームを外すと穴に落ちて即終了する。
 val_acc は「人間の軌跡上での正解率」しか測っておらず、プレイの質とはあまり一致しない。
 
-### 4. `notebooks/04_playagent.ipynb` — デプロイ / スコア出力
+### 4. `notebooks/04_playagent.ipynb` — デプロイ / 提出用ファイルの作成
 
-`models/checkpoints/` に配置した `.pt` のファイル名をノートブック内の `CHECKPOINT_PATH` に指定して実行する。
+`models/checkpoints/` に配置した `.pt` のファイル名をノートブック内の `CHECKPOINT_PATH` に指定し、
+**`STUDENT_ID` を自分の学籍番号に書き換えてから**実行する(提出ファイル名になる)。
+
+**AIのプレイと提出物の作成は同じ実行で行われる。1回の実行 = 1エピソード = 提出物1式。**
+動画はプレイ中に提出用フォルダへ直接書き込まれるので、別途コピーする手順はない。
 
 - `STACK_SIZE` はチェックポイントから読み取るため、`03` で 1〜4 のどの値で学習した場合でも
   `CHECKPOINT_PATH` を差し替えるだけでよい(値が食い違ってテンソル形状エラーになることはない)
 - 学習済モデルで自動プレイし、ゲーム画面のウィンドウが観察可能な速度で表示される
-- 各エピソードのスコア・到達距離・クリア有無を `results/eval_runs/<timestamp>.csv` に記録
-- 各エピソードのプレイ動画を `results/videos/<timestamp>_epNN.mp4` として保存
-- 実行後、平均スコア・平均到達距離・クリア率などの要約が表示される
-- 1回の実行は運の影響が大きいので、`STACK_SIZE` どうしを比較するなら `EPISODES` を10以上にする
-
-**提出用ファイルの作成**
-
-最後のセルを実行すると、提出物一式が `results/submissions/` に作られる。
-**`STUDENT_ID` を自分の学籍番号に書き換えてから実行すること**(提出ファイル名になる)。
+- 実行後、到達距離・クリア有無・Skillスコアと、提出するzipのパスが表示される
 
 ```
 results/submissions/
 ├── <STUDENT_ID>_<timestamp>/
+│   ├── ep00.mp4        # AIのプレイ動画
 │   ├── frames.csv      # フレームごとのログ (mp4のフレームと1対1で対応)
-│   ├── episodes.csv    # エピソードごとの集計 + Skillスコア
-│   └── *.mp4           # AIのプレイ動画
+│   └── episodes.csv    # エピソードごとの集計 + Skillスコア
 └── submission_<STUDENT_ID>_<timestamp>.zip   ← これを提出する
 ```
 
@@ -225,3 +219,8 @@ results/submissions/
 
 Skillスコアは `episodes.csv` に入っているが、`frames.csv` だけからでも再計算できる。
 算出式と定数は `01` / `02` と一致させてあるので、人間のプレイと同じ基準で比較できる。
+
+何度か挑戦して良いものを提出したい場合は、プレイのセルから実行し直せばよい。
+実行のたびに別のフォルダとzipが作られるので、前の結果が上書きされることはない。
+ただし1エピソードの結果は運の影響が大きいため、`STACK_SIZE` どうしを比較するような場合は
+`EPISODES` を増やすか、複数回実行して平均を見ること。
