@@ -3,6 +3,7 @@ data/
 models/checkpoints/*.pt
 results/eval_runs/*.csv
 results/videos/*.mp4
+results/submissions/
 *.zip
 
 # Byte-compiled / optimized / DLL files
