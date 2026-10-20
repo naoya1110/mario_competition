@@ -183,8 +183,12 @@ For detailed instructions, see the description at the top of each notebook.
 | 4 | `04_playagent.ipynb` | Local | Set `CHECKPOINT_PATH` and `TEAM_ID`, then run it to let the AI play | `results/` |
 
 **The file to submit is `results/submission_<TEAM_ID>_<timestamp>.zip`.** Each run of 04 plays one episode
-and creates a complete set of submission files (gameplay video, logs, and Skill score). Every run creates
-new files, so you can submit your best result.
+and creates a complete set of submission files (gameplay video, logs, Skill score, and the checkpoint that played).
+
+**The same checkpoint always plays the same episode.** The model always picks its highest-scoring action, and
+the game starts from the same state every time, so running 04 again with the same `.pt` gives exactly the same
+result. To improve your score, improve the model (data in 01, training in 03). Because the play is reproducible,
+the organizers can replay the checkpoint in your zip to check the result.
 
 **Do not edit `notebooks/competition_config.py`.** It contains the rules shared by all teams: the frame rate
 for recording and inference (`TARGET_FPS`) and the constants and formula of the Skill score.
