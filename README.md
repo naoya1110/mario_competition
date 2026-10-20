@@ -1,4 +1,4 @@
-# Mario environment for AI Robotics Lab
+# Mario Competition in AI Robotics Lab
 
 ## Overview
 
