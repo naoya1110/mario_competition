@@ -48,7 +48,9 @@ Skill = 100 × (0.40·progress + 0.10·clear + 0.20·speed + 0.30·points)
 | Cleared using 100 in-game time, in-game score 6000 | 100.0 |
 
 
-## Setup (Windows / PowerShell)
+## Setup
+
+### Windows / PowerShell
 
 1. Install Python 3.13. (An existing Python 3.12 installation is fine; both versions can coexist.)
 
@@ -99,7 +101,7 @@ Skill = 100 × (0.40·progress + 0.10·clear + 0.20·speed + 0.30·points)
 6. To check the setup, run the first code cell of `notebooks/01_collect_data.ipynb`.
    The setup works if the ROM loads and `SIMPLE_MOVEMENT` is printed.
 
-## Setup (Ubuntu / bash)
+### Ubuntu / bash
 
 These steps have been tested on Ubuntu 24.04 LTS (x86_64). `nes-py 9.0.1` requires **Python 3.13 or later**
 (`requires_python >=3.13` on PyPI), so dependency resolution fails with Ubuntu 24.04's default Python 3.12.
