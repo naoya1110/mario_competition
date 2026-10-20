@@ -1,10 +1,10 @@
 # Mario environment for AI Robotics Lab
 
-Windows 11 上でキーボードを使って Super Mario Bros (`gym-super-mario-bros` / `nes-py`) をプレイし、
+Windows 11 / Ubuntu 上でキーボードを使って Super Mario Bros (`gym-super-mario-bros` / `nes-py`) をプレイし、
 人間のプレイデータを収集して模倣学習(Behavior Cloning)でCNNモデルを学習、学習済モデルをローカルに
 デプロイして自動プレイ・スコア出力するプロジェクト。
 
-- データ収集・データレビュー・デプロイ/スコア出力: ローカル (Windows, Python 3.13)
+- データ収集・データレビュー・デプロイ/スコア出力: ローカル (Windows / Ubuntu, Python 3.13)
 - モデル学習: Google Colab
 
 ## セットアップ (Windows / PowerShell)
@@ -58,6 +58,74 @@ Windows 11 上でキーボードを使って Super Mario Bros (`gym-super-mario-
 
 6. 動作確認として `notebooks/01_collect_data.ipynb` の最初のコードセルを実行し、ROMがロードでき
    `SIMPLE_MOVEMENT` が表示されることを確認する。
+
+## セットアップ (Ubuntu / bash)
+
+Ubuntu 24.04 LTS (x86_64) で動作確認済みの手順。`nes-py 9.0.1` は **Python 3.13 以上**を要求するため
+(PyPI の `requires_python` が `>=3.13`)、24.04 標準の Python 3.12 では依存解決に失敗する。
+Ubuntu 25.04 以降は標準リポジトリに Python 3.13 が含まれるので、手順1のPPA追加は不要。
+
+1. Python 3.13 をインストール(システムの Python 3.12 はそのまま残る。両方共存できる)
+
+   ```bash
+   sudo add-apt-repository ppa:deadsnakes/ppa
+   sudo apt update
+   sudo apt install python3.13 python3.13-venv
+   ```
+
+2. インストール確認
+
+   ```bash
+   python3.13 -V
+   ```
+
+   `Python 3.13.x` と表示されればOK。
+
+3. ゲーム画面の表示に必要なライブラリをインストール
+
+   ```bash
+   sudo apt install libgl1 libglu1-mesa libfontconfig1 libfreetype6 libxext6 libxrender1
+   ```
+
+   pyglet がウィンドウ作成・OpenGL描画と、画面下部の操作説明テキストの描画に使う。
+   通常のデスクトップ環境ならほとんど入っているが、最小構成やコンテナでは不足することがある。
+
+4. プロジェクト直下に Python 3.13 の仮想環境を作成し、有効化
+
+   ```bash
+   python3.13 -m venv .venv
+   source .venv/bin/activate
+   ```
+
+5. 依存パッケージをインストール(**2段階に分かれている。必ずこの順番で実行すること**)
+
+   ```bash
+   python -m pip install --upgrade pip
+   pip install -r requirements1.txt
+   pip install -r requirements2.txt
+   ```
+
+   2段階に分かれている理由はWindowsの手順4と同じ。pyglet 1.5.21 のクラッシュ自体はWindows固有
+   (ctypes/COM の非互換)でLinuxでは起きないが、全員の環境を揃えるためUbuntuでも同じ手順で
+   1.5.31 を上書きインストールする。2つ目のコマンドで出る
+   `nes-py 9.0.1 requires pyglet<=1.5.21, but you have pyglet 1.5.31` の警告も同様に想定通りで、
+   無視してよい。
+
+   nes-py はcp313のLinux向けホイールが配布されているため、インストール時にC++のコンパイルは
+   発生しない(`build-essential` や `python3.13-dev` は不要)。
+
+6. VSCodeで `notebooks/*.ipynb` を開き、カーネルとして `.venv` (Python 3.13) を選択する。
+
+7. 動作確認として `notebooks/01_collect_data.ipynb` の最初のコードセルを実行し、ROMがロードでき
+   `SIMPLE_MOVEMENT` が表示されることを確認する。
+
+**画面表示についての注意**
+
+- pyglet 1.5 はX11向けのため、WaylandセッションではXWayland経由で動作する。ウィンドウ作成に
+  失敗する場合は、ログイン画面の歯車アイコンから「Ubuntu on Xorg」を選んでログインし直す。
+- SSH越しやコンテナなどディスプレイのない環境では、`01` / `04` のプレイウィンドウは開けない。
+  X11転送 (`ssh -X`) を使うか、実機のデスクトップ上で実行すること
+  (`02` は matplotlib の描画のみなので画面がなくても動く)。
 
 ## ファイル構成と使い方
 
@@ -148,8 +216,16 @@ Skillスコアの定数と計算式は `01_collect_data.ipynb` と一致させ�
 
 1. ローカルで `data` フォルダをzip化する
 
+   Windows (PowerShell):
+
    ```powershell
    Compress-Archive -Path data -DestinationPath mario_data.zip
+   ```
+
+   Ubuntu (bash、`zip` が無ければ `sudo apt install zip`):
+
+   ```bash
+   zip -r mario_data.zip data
    ```
 
 2. `mario_data.zip` を Google ドライブの適当なフォルダ(例: `MyDrive/mario_bc/`)にアップロードする
