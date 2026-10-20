@@ -1,6 +1,7 @@
 # Mario BC project data / model artifacts
 data/
-models/checkpoints/*.pt
+models/*
+!models/put_your_models_here.txt
 results/
 *.zip
 
