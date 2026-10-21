@@ -4,12 +4,7 @@
 
 ## Overview
 
-In this competition, each team develops an AI model that plays Super Mario Bros (Stage 1-1).
-You collect your own gameplay data and train a CNN on it with imitation learning (Behavior Cloning).
-The trained model is then deployed to play the game automatically, and teams compete on its score.
-
-- Data collection, data review, and deployment/scoring: local PC (Windows / Ubuntu, Python 3.13)
-- Model training: Google Colab
+In this competition, each team develops an AI model that plays Super Mario Bros (Stage 1-1). You collect your own gameplay data and train a CNN on it with imitation learning (Behavior Cloning). The trained model is then deployed to play the game automatically, and teams compete on its score.
 
 ## Scoring
 
@@ -104,14 +99,9 @@ Skill = 100 × (0.40·progress + 0.10·clear + 0.20·speed + 0.30·points)
    pip install -r requirements2.txt
    ```
 
-   The second step overrides the pyglet version. `nes-py 9.0.1` in `requirements1.txt` requires
-   `pyglet<=1.5.21`, but pyglet 1.5.21 has a known bug that crashes when it creates a window
-   on Windows with Python 3.13. Version 1.5.31 fixes this without changing the pyglet 1.x API that
-   nes-py uses, so `requirements2.txt` intentionally installs 1.5.31 over it.
+   The second step overrides the pyglet version. `nes-py 9.0.1` in `requirements1.txt` requires `pyglet<=1.5.21`, but pyglet 1.5.21 has a known bug that crashes when it creates a window on Windows with Python 3.13. Version 1.5.31 fixes this without changing the pyglet 1.x API that nes-py uses, so `requirements2.txt` intentionally installs 1.5.31 over it.
 
-   As a result, the second command prints the warning
-   `nes-py 9.0.1 requires pyglet<=1.5.21, but you have pyglet 1.5.31`.
-   This is expected and is not an error, so you can ignore it.
+   As a result, the second command prints the warning `nes-py 9.0.1 requires pyglet<=1.5.21, but you have pyglet 1.5.31`. This is expected and is not an error, so you can ignore it.
 
 5. Open `notebooks/*.ipynb` in VS Code and select `.venv` (Python 3.13) as the kernel.
 
@@ -167,15 +157,11 @@ These steps have been tested on Ubuntu 24.04 LTS (x86_64). `nes-py 9.0.1` requir
    pip install -r requirements2.txt
    ```
 
-   The reason is the same as in Windows step 4. The pyglet 1.5.21 crash only happens on Windows,
-   but Ubuntu uses the same steps so that everyone has an identical environment.
-   The warning `nes-py 9.0.1 requires pyglet<=1.5.21, but you have pyglet 1.5.31` from the
-   second command is also expected and can be ignored.
+   The reason is the same as in Windows step 4. The pyglet 1.5.21 crash only happens on Windows, but Ubuntu uses the same steps so that everyone has an identical environment. The warning `nes-py 9.0.1 requires pyglet<=1.5.21, but you have pyglet 1.5.31` from the second command is also expected and can be ignored.
 
 6. Open `notebooks/*.ipynb` in VS Code and select `.venv` (Python 3.13) as the kernel.
 
-7. To check the setup, run the first code cell of `notebooks/01_collect_data.ipynb`.
-   The setup works if the ROM loads and `SIMPLE_MOVEMENT` is printed.
+7. To check the setup, run the first code cell of `notebooks/01_collect_data.ipynb`. The setup works if the ROM loads and `SIMPLE_MOVEMENT` is printed.
 
 
 ## Project structure and workflow
@@ -209,12 +195,7 @@ For detailed instructions, see the description at the top of each notebook.
 | 3 | `03_train_bc.ipynb` | Colab | Upload `mario_data.zip` to Google Drive and train the CNN | `.pt` checkpoint (download it to `models/`) |
 | 4 | `04_playagent.ipynb` | Local | Set `CHECKPOINT_PATH` and `TEAM_ID`, then run it to let the AI play | `results/` |
 
-**The file to submit is `results/submission_<TEAM_ID>_<timestamp>.zip`.** Each run of `notebooks/04_playagent.ipynb` plays one episode
-and creates a complete set of submission files (gameplay video, logs, Skill score, the checkpoint that played,
-and the 04 notebook itself). Save the notebook before you run its last cell: the zip gets the saved file, and the
-cell stops with an error if that file does not match what ran.
+**The file to submit is `results/submission_<TEAM_ID>_<timestamp>.zip`.** Each run of `notebooks/04_playagent.ipynb` plays one episode and creates a complete set of submission files (gameplay video, logs, Skill score, the checkpoint that played, and the 04 notebook itself). Save the notebook before you run its last cell: the zip gets the saved file, and the cell stops with an error if that file does not match what ran.
 
 
-**Do not edit `notebooks/competition_config.py`.** It contains the rules shared by all teams: the frame rate
-for recording and inference (`TARGET_FPS`) and the constants and formula of the Skill score.
-Notebooks 01, 02, and 04 import their settings from this file.
+**Do not edit `notebooks/competition_config.py`.** It contains the rules shared by all teams: the frame rate for recording and inference (`TARGET_FPS`) and the constants and formula of the Skill score. Notebooks 01, 02, and 04 import their settings from this file.
