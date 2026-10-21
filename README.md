@@ -195,7 +195,7 @@ For detailed instructions, see the description at the top of each notebook.
 | 3 | `03_train_bc.ipynb` | Google Colab | Upload `mario_data.zip` to Google Drive and train the CNN | `.pt` checkpoint (download it to `models/`) |
 | 4 | `04_playagent.ipynb` | Local PC | Set `CHECKPOINT_PATH` and `TEAM_ID`, then run it to let the AI play | `results/` |
 
-**The file to submit is `results/submission_<TEAM_ID>_<timestamp>.zip`.** Each run of `notebooks/04_playagent.ipynb` plays one episode and creates a complete set of submission files (gameplay video, logs, Skill score, the checkpoint that played, and the 04 notebook itself). Save the notebook before you run its last cell: the zip gets the saved file, and the cell stops with an error if that file does not match what ran.
+**The file to submit is `results/submission_<TEAM_ID>_<timestamp>.zip`.** Each run of `notebooks/04_playagent.ipynb` plays one episode and creates a complete set of submission files (gameplay video, logs, Skill score, the checkpoint that played, and the `04_playagent.ipynb` notebook itself).
 
 
 **Do not edit `notebooks/competition_config.py`.** It contains the rules shared by all teams: the frame rate for recording and inference (`TARGET_FPS`) and the constants and formula of the Skill score. Notebooks 01, 02, and 04 import their settings from this file.
