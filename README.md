@@ -1,5 +1,7 @@
 # Mario Competition in AI Robotics Lab
 
+<img src="supermariobros.png" alt="Mario Competition" width="200">
+
 ## Overview
 
 In this competition, each team develops an AI model that plays Super Mario Bros (Stage 1-1).
@@ -191,6 +193,7 @@ mario_competition/
 ├── data/                      # collected data (gitignored)
 │   ├── episodes/ep_YYYYMMDD_HHMMSS/  # one folder per episode (video.mp4 + actions.csv)
 │   └── manifest.csv           # episode list (score, x_pos_max, flag_get, etc.)
+├── mario_data.zip             # data/ packed by 02 for upload to Colab (gitignored)
 ├── models/                    # put trained .pt files downloaded from Colab here (contents gitignored)
 └── results/                   # submission files created by 04_playagent.ipynb (gitignored)
 ```
@@ -202,8 +205,8 @@ For detailed instructions, see the description at the top of each notebook.
 | Step | Notebook | Runs on | What to do | Output |
 |---|---|---|---|---|
 | 1 | `01_collect_data.ipynb` | Local | Play Mario with the keyboard and record your gameplay | `data/` |
-| 2 | `02_review_data.ipynb` | Local | Check the collected data and Skill scores, and delete unusable episodes | None |
-| 3 | `03_train_bc.ipynb` | Colab | Upload `data/` to Google Drive as a zip file and train the CNN | `.pt` checkpoint (download it to `models/`) |
+| 2 | `02_review_data.ipynb` | Local | Check the collected data and Skill scores, delete unusable episodes, and pack `data/` into a zip in the last cell | `mario_data.zip` |
+| 3 | `03_train_bc.ipynb` | Colab | Upload `mario_data.zip` to Google Drive and train the CNN | `.pt` checkpoint (download it to `models/`) |
 | 4 | `04_playagent.ipynb` | Local | Set `CHECKPOINT_PATH` and `TEAM_ID`, then run it to let the AI play | `results/` |
 
 **The file to submit is `results/submission_<TEAM_ID>_<timestamp>.zip`.** Each run of `notebooks/04_playagent.ipynb` plays one episode
