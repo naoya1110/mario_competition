@@ -190,10 +190,10 @@ For detailed instructions, see the description at the top of each notebook.
 
 | Step | Notebook | Runs on | What to do | Output |
 |---|---|---|---|---|
-| 1 | `01_collect_data.ipynb` | Local | Play Mario with the keyboard and record your gameplay | `data/` |
-| 2 | `02_review_data.ipynb` | Local | Check the collected data and Skill scores, delete unusable episodes, and pack `data/` into a zip in the last cell | `mario_data.zip` |
-| 3 | `03_train_bc.ipynb` | Colab | Upload `mario_data.zip` to Google Drive and train the CNN | `.pt` checkpoint (download it to `models/`) |
-| 4 | `04_playagent.ipynb` | Local | Set `CHECKPOINT_PATH` and `TEAM_ID`, then run it to let the AI play | `results/` |
+| 1 | `01_collect_data.ipynb` | Local PC | Play Mario with the keyboard and record your gameplay | `data/` |
+| 2 | `02_review_data.ipynb` | Local PC | Check the collected data and Skill scores, delete unusable episodes, and pack `data/` into a zip in the last cell | `mario_data.zip` |
+| 3 | `03_train_bc.ipynb` | Google Colab | Upload `mario_data.zip` to Google Drive and train the CNN | `.pt` checkpoint (download it to `models/`) |
+| 4 | `04_playagent.ipynb` | Local PC | Set `CHECKPOINT_PATH` and `TEAM_ID`, then run it to let the AI play | `results/` |
 
 **The file to submit is `results/submission_<TEAM_ID>_<timestamp>.zip`.** Each run of `notebooks/04_playagent.ipynb` plays one episode and creates a complete set of submission files (gameplay video, logs, Skill score, the checkpoint that played, and the 04 notebook itself). Save the notebook before you run its last cell: the zip gets the saved file, and the cell stops with an error if that file does not match what ran.
 
