@@ -14,6 +14,13 @@ The trained model is then deployed to play the game automatically, and teams com
 Each run of the AI (one episode) is evaluated with a **Skill score** from 0 to 100.
 When you run `04_playagent.ipynb`, the score is recorded in the `skill` column of `episodes.csv` in your submission.
 
+| Component | Max points | Condition for full points |
+|---|---|---|
+| Progress | 40 | Reach the goal |
+| Clear | 10 | Touch the flagpole |
+| Speed | 20 | Clear within 110 in-game time (0 points at 260 or more) |
+| Points | 30 | Clear with an in-game score of 5000 or more |
+
 ```
 progress = min(x_pos_max / 3161, 1)                         # progress rate (3161 = x position of the goal)
 clear    = 1 if flag_get else 0                             # whether Mario cleared the stage
@@ -24,12 +31,7 @@ points   = clear × min(score / 5000, 1)                     # in-game score
 Skill = 100 × (0.40·progress + 0.10·clear + 0.20·speed + 0.30·points)
 ```
 
-| Component | Max points | Condition for full points |
-|---|---|---|
-| Progress | 40 | Reach the goal |
-| Clear | 10 | Touch the flagpole |
-| Speed | 20 | Clear within 110 in-game time (0 points at 260 or more) |
-| Points | 30 | Clear with an in-game score of 5000 or more |
+
 
 - **A plain clear is worth 50 points** (progress 40 + clear 10). The remaining 50 points depend on speed and in-game score.
 - **Speed and points are only awarded for cleared episodes.** An episode that does not clear is scored on progress alone, up to 40 points.
@@ -52,7 +54,14 @@ Skill = 100 × (0.40·progress + 0.10·clear + 0.20·speed + 0.30·points)
 
 ### Windows / PowerShell
 
-1. Install Python 3.13. (An existing Python 3.12 installation is fine; both versions can coexist.)
+1. Open a terminal and clone this repository.
+
+   ```powershell
+   git clone https://github.com/naoya1110/mario_competition
+   cd mario_competition
+   ```
+
+1. Install Python 3.13. (Existing other Python installations are fine; they can coexist.)
 
    ```powershell
    winget install --id Python.Python.3.13 -e
@@ -63,8 +72,14 @@ Skill = 100 × (0.40·progress + 0.10·clear + 0.20·speed + 0.30·points)
    ```powershell
    py -0p
    ```
+   It is installed correctly if `-V:3.13` appears in the list. For example:
+   ```powershell
+    -V:3.14 *        C:\Users\username\AppData\Local\Python\pythoncore-3.14-64\python.exe
+    -V:3.13          C:\Users\username\AppData\Local\Programs\Python\Python313\python.exe
+    -V:3.10          C:\Program Files\Python310\python.exe
+   ```
 
-   It is installed correctly if `-V:3.13` appears in the list.
+   
 
 3. Create a Python 3.13 virtual environment in the project root and activate it.
 
@@ -106,7 +121,14 @@ Skill = 100 × (0.40·progress + 0.10·clear + 0.20·speed + 0.30·points)
 These steps have been tested on Ubuntu 24.04 LTS (x86_64). `nes-py 9.0.1` requires **Python 3.13 or later**
 (`requires_python >=3.13` on PyPI), so dependency resolution fails with Ubuntu 24.04's default Python 3.12.
 
-1. Install Python 3.13. (The system Python 3.12 is kept; both versions can coexist.)
+1. Open a terminal and clone this repository.
+
+   ```bash
+   git clone https://github.com/naoya1110/mario_competition
+   cd mario_competition
+   ```
+
+1. Install Python 3.13. (Existing other Python installations are fine; they can coexist.)
 
    ```bash
    sudo add-apt-repository ppa:deadsnakes/ppa
@@ -184,17 +206,12 @@ For detailed instructions, see the description at the top of each notebook.
 | 3 | `03_train_bc.ipynb` | Colab | Upload `data/` to Google Drive as a zip file and train the CNN | `.pt` checkpoint (download it to `models/`) |
 | 4 | `04_playagent.ipynb` | Local | Set `CHECKPOINT_PATH` and `TEAM_ID`, then run it to let the AI play | `results/` |
 
-**The file to submit is `results/submission_<TEAM_ID>_<timestamp>.zip`.** Each run of 04 plays one episode
-and creates a complete set of submission files (gameplay video, logs, Skill score, and the checkpoint that played).
+**The file to submit is `results/submission_<TEAM_ID>_<timestamp>.zip`.** Each run of `notebooks/04_playagent.ipynb` plays one episode
+and creates a complete set of submission files (gameplay video, logs, Skill score, the checkpoint that played,
+and the 04 notebook itself). Save the notebook before you run its last cell: the zip gets the saved file, and the
+cell stops with an error if that file does not match what ran.
 
-**The same checkpoint always plays the same episode.** The model always picks its highest-scoring action, and
-the game starts from the same state every time, so running 04 again with the same `.pt` gives exactly the same
-result. To improve your score, improve the model (data in 01, training in 03). Because the play is reproducible,
-the organizers can replay the checkpoint in your zip to check the result.
 
 **Do not edit `notebooks/competition_config.py`.** It contains the rules shared by all teams: the frame rate
 for recording and inference (`TARGET_FPS`) and the constants and formula of the Skill score.
 Notebooks 01, 02, and 04 import their settings from this file.
-
-Hyperparameters that you may change to improve your model, such as `STACK_SIZE`, are in the notebooks.
-`STACK_SIZE` only needs to be set in 03; notebook 04 reads it from the checkpoint.
