@@ -6,7 +6,9 @@
 
 In this competition, each team develops an AI model that plays Super Mario Bros (Stage 1-1). You collect your own gameplay data and train a CNN on it with imitation learning (Behavior Cloning). The trained model is then deployed to play the game automatically, and teams compete on its score.
 
-## Scoring
+**This is a team-based competition where collaboration and strategy are key to developing an effective AI model for playing Super Mario Bros. The team rankings are determined by the best skill score within each team.** However, you need to analyze and report each individual member's performance in the subsequent technical presentation.
+
+## Skill Score
 
 Each run of the AI (one episode) is evaluated with a **Skill score** from 0 to 100.
 When you run `04_playagent.ipynb`, the score is recorded in the `skill` column of `episodes.csv` in your submission.
